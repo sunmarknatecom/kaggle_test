@@ -42,18 +42,29 @@ def replace_usefulness(df, question_stem):
     filtered.replace({'Very useful': 1, 'SomeWhat useful': 0.5, 'Not Useful': 0, np.nan:0}, inplace=True)
     return filtered
 
+### What errors?
 def plot_usefulness_questions(df, question_stem, figsize=(12,36), drop_last=None):
+
+    #Use our replace_usefuless function
     replaced = replace_usefulness(df, question_stem)
-    normed = replace.sum().sort_values(ascending=False)
+    
+    #Add up all the values, sort them
+    normed = replaced.sum().sort_values(ascending=False)
+   
+    #Remove the question stem from each row index, leaving only the unique sub-question text
     normed.index=[s[len(question_stem):] for s in normed.index]
-    if drop_last != None:
+    
+    #Drop some of the last ones if needed
+    if drop_last != None: 
         normed.drop(normed.index[-1*drop_last:], inplace=True)
+    
     plt.figure(figsize=figsize)
-    ax = sns.barplot(y=normed.index, x=normed)
+    ax = sns.barplot(y = normed.index, x = normed)
     plt.setp(ax.get_yticklabels(), fontsize=15)
     plt.title(question_stem + ', N = ' + str(len(replaced)))
     plt.xlabel('Usefulness')
     plt.show()
+    
     return normed
 
 def replace_frequency(df, question_stem):
@@ -80,7 +91,7 @@ def replace_importance(df, question_stem):
     if 'Necessary' in filtered.values:
         replacements = {'Necessary': 1, 'Nice to have': 0.5, 'Unnecessary': 0, np.nan: 0}
     else:
-        replcements = {'Very Important': 1, 'Somewhat important': 0.5, 'Not important': 0, np.nan: 0}
+        replacements = {'Very Important': 1, 'Somewhat important': 0.5, 'Not important': 0, np.nan: 0}
     filtered.replace(replacements, inplace=True)
     return filtered
 
@@ -160,4 +171,100 @@ plt.title('First Data Science Training, N = ' + str(MC.FirstTrainingSelect.count
 ax = sns.countplot(y='FirstTrainingSelect', data=MC, order=MC['FirstTrainingSelect'].value_counts().index)
 plt.setp(ax.get_yticklabels(), fontsize=15)
 plt.ylabel('')
+plt.show()
+
+# plot_usefulness_questions
+
+sns.set_palette(sns.cubehelix_palette(20, start=1.7, reverse=True))
+# plot_usefulness_questions(MC, 'LearningPlatformUsefulness', figsize=(10,10))
+
+# multi_plot_hist
+
+filt = multi_plot_hist(MC, 'LearningCategory', figsize=(20,12))
+
+plt.figure(figsize=(12,6))
+plt.title('Most important way to prove knowledge, N = ' + str(MC.ProveKnowledgeSelect.count()))
+ax = sns.countplot(data=MC, y='ProveKnowledgeSelect', order=MC['ProveKnowledgeSelect'].value_counts().index)
+plt.setp(ax.get_yticklabels(), fontsize=15)
+plt.ylabel('')
+plt.show()
+
+sns.set_palette(sns.cubehelix_palette(20, start=1.7, reverse=True))
+plt.figure(figsize=(14,6))
+plt.title('Industry, N = ' + str(len(MC.EmployerIndustry)))
+ax = sns.countplot(y='EmployerIndustry', data=MC, order=MC['EmployerIndustry'].value_counts().index)
+
+plt.setp(ax.get_yticklabels(), fontsize=13)
+plt.ylabel('')
+plt.show()
+
+plt.figure(figsize=(8,8))
+plt.title('Job Function')
+ax = sns.countplot(y='JobFunctionSelect', data=MC, order=MC['JobFunctionSelect'].value_counts().index)
+plt.setp(ax.get_yticklabels(), fontsize=13)
+plt.ylabel('')
+plt.show()
+
+sns.set_palette(sns.cubehelix_palette(30, start=1.7, reverse=True))
+plot_frequency_questions(MC, 'WorkToolsFrequency', figsize=(10,8), drop_last=25)
+
+sns.set_palette(sns.cubehelix_palette(35, start=1.7, reverse=True))
+plot_frequency_questions(MC, 'WorkMethodsFrequency', figsize=(10,8), drop_last = 12)
+
+df = plot_importance_questions(MC, 'JobSkillImportance', figsize=(10,7), drop_last=3)
+
+plt.figure(figsize=(12,6))
+plt.title('Recommended Language')
+sns.set_palette(sns.cubehelix_palette(13, start=1.7, reverse=True))
+ax = sns.countplot(data=MC, y='LanguageRecommendationSelect', order=MC['LanguageRecommendationSelect'].value_counts().index);
+plt.ylabel('')
+plt.setp(ax.get_yticklabels(), fontsize=14)
+plt.show()
+
+plt.figure(figsize=(12,6))
+plt.title('Job Search')
+ax = sns.countplot(y='JobSearchResource', data=MC, order=MC['JobSearchResource'].value_counts().index)
+plt.setp(ax.get_yticklabels(), fontsize=15)
+plt.ylabel('')
+plt.show()
+
+
+sns.set_palette(sns.cubehelix_palette(13, start=1.7, reverse=True))
+select_all_that_apply_plot(MC, 'MLSkillsSelect', figsize=(10,8))
+
+
+plt.figure(figsize=(10,6))
+plt.title('Level of Algorithum Understanding')
+ax = sns.countplot(y='AlgorithmUnderstandingLevel', data=MC, order=MC['AlgorithmUnderstandingLevel'].value_counts().index);
+plt.setp(ax.get_yticklabels(), fontsize=13)
+plt.ylabel('')
+plt.show()
+
+sns.set_palette(sns.cubehelix_palette(30, start=1.7, reverse=True))
+plot_frequency_questions(MC, 'WorkChallengeFrequency', figsize=(12,8), drop_last=6)
+
+sns.set_palette(sns.cubehelix_palette(20, start=1.7, reverse=True))
+plot_importance_questions(MC, 'JobFactor', figsize=(12,8))
+
+
+plt.figure(figsize=(8,6))
+plt.title('Data Scientist')
+ax = sns.countplot(y='DataScienceIdentitySelect', data=MC, order=MC['DataScienceIdentitySelect'].value_counts().index);
+plt.setp(ax.get_yticklabels(), fontsize=15)
+plt.ylabel('')
+plt.show()
+
+plt.figure(figsize=(14,6))
+sns.set_palette(sns.cubehelix_palette(12, start=1.7, reverse=True))
+plt.title('Machine Learning at Work, N = ' + str(MC.EmployerMLTime.count()))
+ax = sns.countplot(y='EmployerMLTime', data=MC, order=['Less than one year', '1-2 years','3-5 years','6-10 years','More than 10 years','Don\'t know']);
+plt.ylabel('')
+plt.setp(ax.get_yticklabels(), fontsize=15)
+plt.show()
+
+
+plt.figure(figsize=(14,7))
+plt.title('Job Satisfaction, N = ' + str(MC.JobSatisfaction.count()))
+plt.ylabel('')
+sns.countplot(x='JobSatisfaction', data=MC, order=['1 - Highly Dissatisfied','2', '3','4','5','6','7','8','9','10 - Highly Satisfied',])
 plt.show()
